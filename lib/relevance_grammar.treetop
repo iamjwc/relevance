@@ -1,0 +1,65 @@
+grammar Relevance
+  rule complex_expr
+    whitespace
+    (
+      complex_expr_with_parens whitespace (binary_operator complex_expr whitespace )*
+      /
+      basic_expr (binary_operator complex_expr whitespace )*
+    )
+    whitespace
+  end
+
+  rule complex_expr_with_parens
+    '(' complex_expr ')'
+  end
+
+  rule basic_expr
+    (
+      basic_expr_with_parens
+      /
+      item (binary_operator basic_expr)*
+    )
+  end
+
+  rule basic_expr_with_parens
+    '(' basic_expr ')'
+  end
+
+  rule binary_operator
+    whitespace ('==' / '!=' / '>=' / '<=' / '>' / '<' / '&&' / '||') whitespace
+  end
+
+  rule item
+    whitespace identifier / number / string
+  end
+ 
+  rule identifier
+    [a-zA-Z] [a-zA-Z0-9_\[\]]* {
+		  def value
+			  "field('#{text_value}')"
+			end
+		}
+  end
+
+  # XXX: Ask the mailing list about this one. :-/
+  rule string
+    (double_quoted_string / single_quoted_string)
+  end
+
+  rule single_quoted_string
+    "'" (!"'" .)* "'"
+  end
+
+  rule double_quoted_string
+    '"' (!'"' . / '\"')* '"'
+  end
+
+  rule number
+    [1-9] [0-9]*
+  end
+
+  rule whitespace
+    [\s]*
+  end
+end
+
