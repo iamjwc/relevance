@@ -1,65 +1,83 @@
 grammar Relevance
-  rule complex_expr
-    whitespace
-    (
-      complex_expr_with_parens whitespace (binary_operator complex_expr whitespace )*
-      /
-      basic_expr (binary_operator complex_expr whitespace )*
-    )
-    whitespace
+  rule stmt
+    (item (binary_operator item)*) / stmt_parens
   end
 
-  rule complex_expr_with_parens
-    '(' complex_expr ')'
-  end
-
-  rule basic_expr
-    (
-      basic_expr_with_parens
-      /
-      item (binary_operator basic_expr)*
-    )
-  end
-
-  rule basic_expr_with_parens
-    '(' basic_expr ')'
+  rule stmt_parens
+    '(' stmt ')'
   end
 
   rule binary_operator
-    whitespace ('==' / '!=' / '>=' / '<=' / '>' / '<' / '&&' / '||') whitespace
+    whitespace ('==' / '!=' / '>=' / '<=' / '>' / '<' / '&&' / '||') whitespace {
+      def content
+        p text_value
+        nil
+      end
+    }
   end
 
   rule item
-    whitespace identifier / number / string
+    (identifier / number / string / stmt_parens) {
+      def content
+        p text_value
+        elements[1].content
+      end
+    }
   end
  
   rule identifier
     [a-zA-Z] [a-zA-Z0-9_\[\]]* {
-		  def value
-			  "field('#{text_value}')"
+		  def content
+        p text_value
+			  text_value.to_sym
 			end
 		}
   end
 
   # XXX: Ask the mailing list about this one. :-/
   rule string
-    (double_quoted_string / single_quoted_string)
+    (double_quoted_string / single_quoted_string) {
+      def content
+        p text_value
+        text_value
+      end
+    }
   end
 
   rule single_quoted_string
-    "'" (!"'" .)* "'"
+    "'" (!"'" .)* "'" {
+      def content
+        p text_value
+        nil
+      end
+    }
   end
 
   rule double_quoted_string
-    '"' (!'"' . / '\"')* '"'
+    '"' (!'"' . / '\"')* '"' {
+      def content
+        p text_value
+        nil
+      end
+    }
   end
 
   rule number
-    [1-9] [0-9]*
+    [1-9] [0-9]* {
+      def content
+        p text_value
+        text_value.to_i
+      end
+    }
   end
 
   rule whitespace
-    [\s]*
+    [\s]* {
+      def content
+        p text_value
+        nil
+      end
+    }
   end
 end
 
