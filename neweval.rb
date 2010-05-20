@@ -1,31 +1,5 @@
 require 'rubygems'; require 'treetop'; require 'lib/relevance_grammar'; require 'ruby-debug'
 
-# def realeval(t)
-#   def neweval(t, accum)
-#     return if t.elements.nil?
-#     children_types = t.elements.map {|e| e.extension_modules }.flatten
-# 
-#     # If it has children types, eval them, otherwise
-#     if !children_types.empty?
-#       a = []
-#       t.elements.map do |e|
-#         neweval(e, a)
-#       end
-#       accum << a
-#     else
-#       # Trimmed val
-#       val = t.text_value.gsub(/^[ ]+|[ ]+$/, "")
-# 
-#       accum << val unless val.empty?
-#     end
-# 
-#     accum
-#   end
-#   neweval(t, [])
-# end
-# 
-#    
-
 class Rel
   def initialize(tree)
     @tree = tree
@@ -104,6 +78,3 @@ input.each do |s|
   end
 end
 
-input.each do |s|
-  #p !!RelevanceParser.new.parse(s)
-end
