@@ -1,17 +1,27 @@
 grammar Relevance
   rule stmt
-    (item (binary_operator item)*) / stmt_parens
+    ((item (binary_operator item)*) / stmt_parens) {
+      def content
+        p text_value
+        elements.map {|e| e.content }
+      end
+    }
   end
 
   rule stmt_parens
-    '(' stmt ')'
+    '(' stmt ')' {
+      def content
+        p text_value
+        [:open_paren, elements[1], :close_paren]
+      end
+    }
   end
 
   rule binary_operator
     whitespace ('==' / '!=' / '>=' / '<=' / '>' / '<' / '&&' / '||') whitespace {
       def content
         p text_value
-        nil
+        []
       end
     }
   end
@@ -20,7 +30,7 @@ grammar Relevance
     (identifier / number / string / stmt_parens) {
       def content
         p text_value
-        elements[1].content
+        [elements[1].content]
       end
     }
   end
@@ -29,7 +39,7 @@ grammar Relevance
     [a-zA-Z] [a-zA-Z0-9_\[\]]* {
 		  def content
         p text_value
-			  text_value.to_sym
+			  [text_value.to_sym]
 			end
 		}
   end
@@ -39,7 +49,7 @@ grammar Relevance
     (double_quoted_string / single_quoted_string) {
       def content
         p text_value
-        text_value
+        [text_value]
       end
     }
   end
@@ -48,17 +58,18 @@ grammar Relevance
     "'" (!"'" .)* "'" {
       def content
         p text_value
-        nil
+        [text_value]
       end
-    }
+      }
   end
 
   rule double_quoted_string
     '"' (!'"' . / '\"')* '"' {
       def content
         p text_value
-        nil
+        [text_value]
       end
+
     }
   end
 
@@ -66,7 +77,7 @@ grammar Relevance
     [1-9] [0-9]* {
       def content
         p text_value
-        text_value.to_i
+        [text_value.to_i]
       end
     }
   end
@@ -75,7 +86,7 @@ grammar Relevance
     [\s]* {
       def content
         p text_value
-        nil
+        []
       end
     }
   end

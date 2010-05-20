@@ -25,6 +25,13 @@ module Relevance
 
   end
 
+  module Stmt2
+    def content
+      p text_value
+      elements.map {|e| e.content }
+    end
+  end
+
   def _nt_stmt
     start_index = index
     if node_cache[:stmt].has_key?(index)
@@ -77,6 +84,7 @@ module Relevance
       r0 = r1
     else
       r7 = _nt_stmt_parens
+      r7.extend(Stmt2)
       if r7
         r0 = r7
       else
@@ -95,6 +103,13 @@ module Relevance
       elements[1]
     end
 
+  end
+
+  module StmtParens1
+    def content
+      p text_value
+      [:open_paren, elements[1], :close_paren]
+    end
   end
 
   def _nt_stmt_parens
@@ -134,6 +149,7 @@ module Relevance
     if s0.last
       r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
       r0.extend(StmtParens0)
+      r0.extend(StmtParens1)
     else
       @index = i0
       r0 = nil
@@ -157,7 +173,7 @@ module Relevance
   module BinaryOperator1
     def content
       p text_value
-      nil
+      []
     end
   end
 
@@ -290,7 +306,7 @@ module Relevance
   module Item0
     def content
       p text_value
-      elements[1].content
+      [elements[1].content]
     end
   end
 
@@ -344,7 +360,7 @@ module Relevance
   module Identifier1
 		  def content
     p text_value
-			  text_value.to_sym
+			  [text_value.to_sym]
 			end
   end
 
@@ -402,7 +418,7 @@ module Relevance
   module String0
     def content
       p text_value
-      text_value
+      [text_value]
     end
   end
 
@@ -447,7 +463,7 @@ module Relevance
   module SingleQuotedString2
     def content
       p text_value
-      nil
+      [text_value]
     end
   end
 
@@ -549,7 +565,7 @@ module Relevance
   module DoubleQuotedString2
     def content
       p text_value
-      nil
+      [text_value]
     end
   end
 
@@ -666,7 +682,7 @@ module Relevance
   module Number1
     def content
       p text_value
-      text_value.to_i
+      [text_value.to_i]
     end
   end
 
@@ -724,7 +740,7 @@ module Relevance
   module Whitespace0
     def content
       p text_value
-      nil
+      []
     end
   end
 

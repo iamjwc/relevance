@@ -1,10 +1,5 @@
 require 'rubygems'; require 'treetop'; require 'lib/relevance_grammar'
 
-p RelevanceParser.new.parse('a==b')
-p RelevanceParser.new.parse('a == b && a')
-p RelevanceParser.new.parse('a == b')
-p RelevanceParser.new.parse('(a == b)')
-p RelevanceParser.new.parse('(a)')
 
 
 
@@ -47,5 +42,5 @@ d && e || (f && g)
 INPUT
 
 input.each do |s|
-  p !!RelevanceParser.new.parse(s)
+  p RelevanceParser.new.parse(s)
 end
