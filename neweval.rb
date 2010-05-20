@@ -1,4 +1,4 @@
-require 'rubygems'; require 'treetop'; require 'lib/relevance_grammar'
+require 'rubygems'; require 'treetop'; require 'lib/relevance_grammar'; require 'ruby-debug'
 
 # def realeval(t)
 #   def neweval(t, accum)
@@ -42,6 +42,7 @@ a || b || c
 d && e || (f && g)
 d &&    e || (   f && g   )
 INPUT
+
 
 input.each do |s|
   st = RelevanceParser.new.parse(s)

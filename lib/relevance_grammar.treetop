@@ -2,21 +2,17 @@ grammar Relevance
   rule stmt
     i:item op:operator s:stmt {
       def tree
+        debugger
         [i.tree, op.tree, s.tree]
       end
     }
-    / item {
-      def tree
-        #elements.select {|e| e.respond_to? :tree }.map {|e| e.tree }
-        text_value
-      end
-    }
+    / item
   end
 
   rule stmt_parens
-    '(' ws stmt ws ')' {
+    '(' ws s:stmt ws ')' {
       def tree
-        [ elements[2].tree ]
+        s.tree
       end
     }
   end
@@ -36,11 +32,7 @@ grammar Relevance
       end
     }
 
-    / constant {
-      def tree
-        text_value
-      end
-    }
+    / constant
 
     / stmt_parens
   end
@@ -54,7 +46,17 @@ grammar Relevance
   end
 
   rule constant
-    number / string
+    number {
+      def tree
+        text_value.to_i
+      end
+    }
+
+    / string {
+      def tree
+        text_value
+      end
+    }
   end
 
   rule number

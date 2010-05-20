@@ -24,14 +24,8 @@ module Relevance
 
   module Stmt1
     def tree
+      debugger
       [i.tree, op.tree, s.tree]
-    end
-  end
-
-  module Stmt2
-    def tree
-      #elements.select {|e| e.respond_to? :tree }.map {|e| e.tree }
-      text_value
     end
   end
 
@@ -70,7 +64,6 @@ module Relevance
       r0 = r1
     else
       r5 = _nt_item
-      r5.extend(Stmt2)
       if r5
         r0 = r5
       else
@@ -89,7 +82,7 @@ module Relevance
       elements[1]
     end
 
-    def stmt
+    def s
       elements[2]
     end
 
@@ -101,7 +94,7 @@ module Relevance
 
   module StmtParens1
     def tree
-      [ elements[2].tree ]
+      s.tree
     end
   end
 
@@ -223,12 +216,6 @@ module Relevance
     end
   end
 
-  module Item1
-    def tree
-      text_value
-    end
-  end
-
   def _nt_item
     start_index = index
     if node_cache[:item].has_key?(index)
@@ -247,7 +234,6 @@ module Relevance
       r0 = r1
     else
       r2 = _nt_constant
-      r2.extend(Item1)
       if r2
         r0 = r2
       else
@@ -427,6 +413,18 @@ module Relevance
     r0
   end
 
+  module Constant0
+    def tree
+      text_value.to_i
+    end
+  end
+
+  module Constant1
+    def tree
+      text_value
+    end
+  end
+
   def _nt_constant
     start_index = index
     if node_cache[:constant].has_key?(index)
@@ -440,10 +438,12 @@ module Relevance
 
     i0 = index
     r1 = _nt_number
+    r1.extend(Constant0)
     if r1
       r0 = r1
     else
       r2 = _nt_string
+      r2.extend(Constant1)
       if r2
         r0 = r2
       else
