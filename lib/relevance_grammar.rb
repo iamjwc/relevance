@@ -9,6 +9,13 @@ module Relevance
   end
 
   module Stmt0
+    def content
+      p text_value
+      elements.map {|e| e.content if e.respond_to? :content }
+    end
+  end
+
+  module Stmt1
     def binary_operator
       elements[0]
     end
@@ -18,17 +25,17 @@ module Relevance
     end
   end
 
-  module Stmt1
+  module Stmt2
     def item
       elements[0]
     end
 
   end
 
-  module Stmt2
+  module Stmt3
     def content
       p text_value
-      elements.map {|e| e.content }
+      elements.map {|e| e.content if e.respond_to? :content }
     end
   end
 
@@ -44,49 +51,54 @@ module Relevance
     end
 
     i0 = index
-    i1, s1 = index, []
-    r2 = _nt_item
-    s1 << r2
-    if r2
-      s3, i3 = [], index
-      loop do
-        i4, s4 = index, []
-        r5 = _nt_binary_operator
-        s4 << r5
-        if r5
-          r6 = _nt_item
-          s4 << r6
-        end
-        if s4.last
-          r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
-          r4.extend(Stmt0)
-        else
-          @index = i4
-          r4 = nil
-        end
-        if r4
-          s3 << r4
-        else
-          break
-        end
-      end
-      r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
-      s1 << r3
-    end
-    if s1.last
-      r1 = instantiate_node(SyntaxNode,input, i1...index, s1)
-      r1.extend(Stmt1)
-    else
-      @index = i1
-      r1 = nil
-    end
+    r1 = _nt_item
+    r1.extend(Stmt0)
     if r1
       r0 = r1
     else
-      r7 = _nt_stmt_parens
-      r7.extend(Stmt2)
-      if r7
-        r0 = r7
+      i2, s2 = index, []
+      r3 = _nt_item
+      s2 << r3
+      if r3
+        s4, i4 = [], index
+        loop do
+          i5, s5 = index, []
+          r6 = _nt_binary_operator
+          s5 << r6
+          if r6
+            r7 = _nt_item
+            s5 << r7
+          end
+          if s5.last
+            r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
+            r5.extend(Stmt1)
+          else
+            @index = i5
+            r5 = nil
+          end
+          if r5
+            s4 << r5
+          else
+            break
+          end
+        end
+        if s4.empty?
+          @index = i4
+          r4 = nil
+        else
+          r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
+        end
+        s2 << r4
+      end
+      if s2.last
+        r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
+        r2.extend(Stmt2)
+      else
+        @index = i2
+        r2 = nil
+      end
+      if r2
+        r0 = r2
       else
         @index = i0
         r0 = nil
@@ -108,7 +120,7 @@ module Relevance
   module StmtParens1
     def content
       p text_value
-      [:open_paren, elements[1], :close_paren]
+      [:open_paren, elements[1].content, :close_paren]
     end
   end
 
@@ -165,6 +177,10 @@ module Relevance
       elements[0]
     end
 
+    def op
+      elements[1]
+    end
+
     def whitespace2
       elements[2]
     end
@@ -173,7 +189,8 @@ module Relevance
   module BinaryOperator1
     def content
       p text_value
-      []
+      p op
+      [op.text_value]
     end
   end
 
@@ -192,101 +209,11 @@ module Relevance
     r1 = _nt_whitespace
     s0 << r1
     if r1
-      i2 = index
-      if has_terminal?('==', false, index)
-        r3 = instantiate_node(SyntaxNode,input, index...(index + 2))
-        @index += 2
-      else
-        terminal_parse_failure('==')
-        r3 = nil
-      end
-      if r3
-        r2 = r3
-      else
-        if has_terminal?('!=', false, index)
-          r4 = instantiate_node(SyntaxNode,input, index...(index + 2))
-          @index += 2
-        else
-          terminal_parse_failure('!=')
-          r4 = nil
-        end
-        if r4
-          r2 = r4
-        else
-          if has_terminal?('>=', false, index)
-            r5 = instantiate_node(SyntaxNode,input, index...(index + 2))
-            @index += 2
-          else
-            terminal_parse_failure('>=')
-            r5 = nil
-          end
-          if r5
-            r2 = r5
-          else
-            if has_terminal?('<=', false, index)
-              r6 = instantiate_node(SyntaxNode,input, index...(index + 2))
-              @index += 2
-            else
-              terminal_parse_failure('<=')
-              r6 = nil
-            end
-            if r6
-              r2 = r6
-            else
-              if has_terminal?('>', false, index)
-                r7 = instantiate_node(SyntaxNode,input, index...(index + 1))
-                @index += 1
-              else
-                terminal_parse_failure('>')
-                r7 = nil
-              end
-              if r7
-                r2 = r7
-              else
-                if has_terminal?('<', false, index)
-                  r8 = instantiate_node(SyntaxNode,input, index...(index + 1))
-                  @index += 1
-                else
-                  terminal_parse_failure('<')
-                  r8 = nil
-                end
-                if r8
-                  r2 = r8
-                else
-                  if has_terminal?('&&', false, index)
-                    r9 = instantiate_node(SyntaxNode,input, index...(index + 2))
-                    @index += 2
-                  else
-                    terminal_parse_failure('&&')
-                    r9 = nil
-                  end
-                  if r9
-                    r2 = r9
-                  else
-                    if has_terminal?('||', false, index)
-                      r10 = instantiate_node(SyntaxNode,input, index...(index + 2))
-                      @index += 2
-                    else
-                      terminal_parse_failure('||')
-                      r10 = nil
-                    end
-                    if r10
-                      r2 = r10
-                    else
-                      @index = i2
-                      r2 = nil
-                    end
-                  end
-                end
-              end
-            end
-          end
-        end
-      end
+      r2 = _nt_op
       s0 << r2
       if r2
-        r11 = _nt_whitespace
-        s0 << r11
+        r3 = _nt_whitespace
+        s0 << r3
       end
     end
     if s0.last
@@ -303,7 +230,129 @@ module Relevance
     r0
   end
 
+  def _nt_op
+    start_index = index
+    if node_cache[:op].has_key?(index)
+      cached = node_cache[:op][index]
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
+      return cached
+    end
+
+    i0 = index
+    if has_terminal?('==', false, index)
+      r1 = instantiate_node(SyntaxNode,input, index...(index + 2))
+      @index += 2
+    else
+      terminal_parse_failure('==')
+      r1 = nil
+    end
+    if r1
+      r0 = r1
+    else
+      if has_terminal?('!=', false, index)
+        r2 = instantiate_node(SyntaxNode,input, index...(index + 2))
+        @index += 2
+      else
+        terminal_parse_failure('!=')
+        r2 = nil
+      end
+      if r2
+        r0 = r2
+      else
+        if has_terminal?('>=', false, index)
+          r3 = instantiate_node(SyntaxNode,input, index...(index + 2))
+          @index += 2
+        else
+          terminal_parse_failure('>=')
+          r3 = nil
+        end
+        if r3
+          r0 = r3
+        else
+          if has_terminal?('<=', false, index)
+            r4 = instantiate_node(SyntaxNode,input, index...(index + 2))
+            @index += 2
+          else
+            terminal_parse_failure('<=')
+            r4 = nil
+          end
+          if r4
+            r0 = r4
+          else
+            if has_terminal?('>', false, index)
+              r5 = instantiate_node(SyntaxNode,input, index...(index + 1))
+              @index += 1
+            else
+              terminal_parse_failure('>')
+              r5 = nil
+            end
+            if r5
+              r0 = r5
+            else
+              if has_terminal?('<', false, index)
+                r6 = instantiate_node(SyntaxNode,input, index...(index + 1))
+                @index += 1
+              else
+                terminal_parse_failure('<')
+                r6 = nil
+              end
+              if r6
+                r0 = r6
+              else
+                if has_terminal?('&&', false, index)
+                  r7 = instantiate_node(SyntaxNode,input, index...(index + 2))
+                  @index += 2
+                else
+                  terminal_parse_failure('&&')
+                  r7 = nil
+                end
+                if r7
+                  r0 = r7
+                else
+                  if has_terminal?('||', false, index)
+                    r8 = instantiate_node(SyntaxNode,input, index...(index + 2))
+                    @index += 2
+                  else
+                    terminal_parse_failure('||')
+                    r8 = nil
+                  end
+                  if r8
+                    r0 = r8
+                  else
+                    @index = i0
+                    r0 = nil
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
+
+    node_cache[:op][start_index] = r0
+
+    r0
+  end
+
   module Item0
+		  def content
+    p text_value
+			  [text_value.to_sym]
+			end
+  end
+
+  module Item1
+    def content
+      p text_value
+      [text_value]
+    end
+  end
+
+  module Item2
     def content
       p text_value
       [elements[1].content]
@@ -323,28 +372,22 @@ module Relevance
 
     i0 = index
     r1 = _nt_identifier
+    r1.extend(Item0)
     if r1
       r0 = r1
-      r0.extend(Item0)
     else
-      r2 = _nt_number
+      r2 = _nt_constant
+      r2.extend(Item1)
       if r2
         r0 = r2
-        r0.extend(Item0)
       else
-        r3 = _nt_string
+        r3 = _nt_stmt_parens
+        r3.extend(Item2)
         if r3
           r0 = r3
-          r0.extend(Item0)
         else
-          r4 = _nt_stmt_parens
-          if r4
-            r0 = r4
-            r0.extend(Item0)
-          else
-            @index = i0
-            r0 = nil
-          end
+          @index = i0
+          r0 = nil
         end
       end
     end
@@ -354,14 +397,37 @@ module Relevance
     r0
   end
 
-  module Identifier0
+  def _nt_constant
+    start_index = index
+    if node_cache[:constant].has_key?(index)
+      cached = node_cache[:constant][index]
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
+      return cached
+    end
+
+    i0 = index
+    r1 = _nt_number
+    if r1
+      r0 = r1
+    else
+      r2 = _nt_string
+      if r2
+        r0 = r2
+      else
+        @index = i0
+        r0 = nil
+      end
+    end
+
+    node_cache[:constant][start_index] = r0
+
+    r0
   end
 
-  module Identifier1
-		  def content
-    p text_value
-			  [text_value.to_sym]
-			end
+  module Identifier0
   end
 
   def _nt_identifier
@@ -404,7 +470,6 @@ module Relevance
     if s0.last
       r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
       r0.extend(Identifier0)
-      r0.extend(Identifier1)
     else
       @index = i0
       r0 = nil
@@ -413,13 +478,6 @@ module Relevance
     node_cache[:identifier][start_index] = r0
 
     r0
-  end
-
-  module String0
-    def content
-      p text_value
-      [text_value]
-    end
   end
 
   def _nt_string
@@ -437,12 +495,10 @@ module Relevance
     r1 = _nt_double_quoted_string
     if r1
       r0 = r1
-      r0.extend(String0)
     else
       r2 = _nt_single_quoted_string
       if r2
         r0 = r2
-        r0.extend(String0)
       else
         @index = i0
         r0 = nil
@@ -458,13 +514,6 @@ module Relevance
   end
 
   module SingleQuotedString1
-  end
-
-  module SingleQuotedString2
-    def content
-      p text_value
-      [text_value]
-    end
   end
 
   def _nt_single_quoted_string
@@ -545,7 +594,6 @@ module Relevance
     if s0.last
       r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
       r0.extend(SingleQuotedString1)
-      r0.extend(SingleQuotedString2)
     else
       @index = i0
       r0 = nil
@@ -560,13 +608,6 @@ module Relevance
   end
 
   module DoubleQuotedString1
-  end
-
-  module DoubleQuotedString2
-    def content
-      p text_value
-      [text_value]
-    end
   end
 
   def _nt_double_quoted_string
@@ -665,7 +706,6 @@ module Relevance
     if s0.last
       r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
       r0.extend(DoubleQuotedString1)
-      r0.extend(DoubleQuotedString2)
     else
       @index = i0
       r0 = nil
@@ -677,13 +717,6 @@ module Relevance
   end
 
   module Number0
-  end
-
-  module Number1
-    def content
-      p text_value
-      [text_value.to_i]
-    end
   end
 
   def _nt_number
@@ -726,7 +759,6 @@ module Relevance
     if s0.last
       r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
       r0.extend(Number0)
-      r0.extend(Number1)
     else
       @index = i0
       r0 = nil
@@ -735,13 +767,6 @@ module Relevance
     node_cache[:number][start_index] = r0
 
     r0
-  end
-
-  module Whitespace0
-    def content
-      p text_value
-      []
-    end
   end
 
   def _nt_whitespace
@@ -770,7 +795,6 @@ module Relevance
       end
     end
     r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-    r0.extend(Whitespace0)
 
     node_cache[:whitespace][start_index] = r0
 

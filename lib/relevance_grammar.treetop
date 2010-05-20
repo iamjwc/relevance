@@ -1,9 +1,16 @@
 grammar Relevance
   rule stmt
-    ((item (binary_operator item)*) / stmt_parens) {
+    item {
       def content
         p text_value
-        elements.map {|e| e.content }
+        elements.map {|e| e.content if e.respond_to? :content }
+      end
+    }
+
+    / (item (binary_operator item)+) {
+      def content
+        p text_value
+        elements.map {|e| e.content if e.respond_to? :content }
       end
     }
   end
@@ -12,83 +19,75 @@ grammar Relevance
     '(' stmt ')' {
       def content
         p text_value
-        [:open_paren, elements[1], :close_paren]
+        [:open_paren, elements[1].content, :close_paren]
       end
     }
   end
 
   rule binary_operator
-    whitespace ('==' / '!=' / '>=' / '<=' / '>' / '<' / '&&' / '||') whitespace {
+    whitespace op whitespace {
       def content
         p text_value
-        []
+        p op
+        [op.text_value]
       end
     }
   end
 
+  rule op
+    '==' / '!=' / '>=' / '<=' / '>' / '<' / '&&' / '||'
+  end
+
   rule item
-    (identifier / number / string / stmt_parens) {
+    identifier {
+		  def content
+        p text_value
+			  [text_value.to_sym]
+			end
+		}
+
+    / constant {
+      def content
+        p text_value
+        [text_value]
+      end
+    }
+
+    / stmt_parens {
       def content
         p text_value
         [elements[1].content]
       end
     }
   end
+
+  rule constant
+    number / string
+  end
  
   rule identifier
-    [a-zA-Z] [a-zA-Z0-9_\[\]]* {
-		  def content
-        p text_value
-			  [text_value.to_sym]
-			end
-		}
+    [a-zA-Z] [a-zA-Z0-9_\[\]]*
   end
 
   # XXX: Ask the mailing list about this one. :-/
   rule string
-    (double_quoted_string / single_quoted_string) {
-      def content
-        p text_value
-        [text_value]
-      end
-    }
+    double_quoted_string / single_quoted_string
   end
 
   rule single_quoted_string
-    "'" (!"'" .)* "'" {
-      def content
-        p text_value
-        [text_value]
-      end
-      }
+    "'" (!"'" .)* "'" 
   end
 
   rule double_quoted_string
-    '"' (!'"' . / '\"')* '"' {
-      def content
-        p text_value
-        [text_value]
-      end
-
-    }
+    '"' (!'"' . / '\"')* '"'
   end
 
   rule number
-    [1-9] [0-9]* {
-      def content
-        p text_value
-        [text_value.to_i]
-      end
-    }
+    [1-9] [0-9]*
   end
 
   rule whitespace
-    [\s]* {
-      def content
-        p text_value
-        []
-      end
-    }
+    [\s]*
   end
 end
 
