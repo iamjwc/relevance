@@ -24,7 +24,6 @@ module Relevance
 
   module Stmt1
     def tree
-      debugger
       [i.tree, op.tree, s.tree]
     end
   end

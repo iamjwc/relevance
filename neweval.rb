@@ -24,7 +24,24 @@ require 'rubygems'; require 'treetop'; require 'lib/relevance_grammar'; require 
 #   neweval(t, [])
 # end
 # 
-#   
+#    
+
+# class Relevance
+#   def initialize
+#     @tree = [:d, "&&", [:e, "||", [:f, "&&", :g]]]
+#   end
+# 
+#   def evaluate(env)
+#     stack = []
+# 
+#     def e(tree, stack)
+#       if tree.size == 1
+#         return node_value(env)
+#       else
+#       end
+#     end
+#   end
+# end
 
 input = <<-INPUT.split("\n")
 a
@@ -41,6 +58,7 @@ a == ((1 == 2) && (2 || 3))
 a || b || c
 d && e || (f && g)
 d &&    e || (   f && g   )
+(((1 == 2)))
 INPUT
 
 

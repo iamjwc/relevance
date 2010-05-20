@@ -2,7 +2,6 @@ grammar Relevance
   rule stmt
     i:item op:operator s:stmt {
       def tree
-        debugger
         [i.tree, op.tree, s.tree]
       end
     }
