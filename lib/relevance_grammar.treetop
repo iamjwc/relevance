@@ -1,37 +1,14 @@
 grammar Relevance
   rule stmt
-    item {
-      def content
-        p text_value
-        elements.map {|e| e.content if e.respond_to? :content }
-      end
-    }
-
-    / (item (binary_operator item)+) {
-      def content
-        p text_value
-        elements.map {|e| e.content if e.respond_to? :content }
-      end
-    }
+    item (operator item)*
   end
 
   rule stmt_parens
-    '(' stmt ')' {
-      def content
-        p text_value
-        [:open_paren, elements[1].content, :close_paren]
-      end
-    }
+    '(' stmt ')'
   end
 
-  rule binary_operator
-    whitespace op whitespace {
-      def content
-        p text_value
-        p op
-        [op.text_value]
-      end
-    }
+  rule operator
+    ws op ws
   end
 
   rule op
@@ -39,36 +16,21 @@ grammar Relevance
   end
 
   rule item
-    identifier {
-		  def content
-        p text_value
-			  [text_value.to_sym]
-			end
-		}
+    identifier / constant / stmt_parens
+  end
 
-    / constant {
-      def content
-        p text_value
-        [text_value]
-      end
-    }
-
-    / stmt_parens {
-      def content
-        p text_value
-        [elements[1].content]
-      end
-    }
+  rule identifier
+    [a-zA-Z] [a-zA-Z0-9_\[\]]*
   end
 
   rule constant
     number / string
   end
- 
-  rule identifier
-    [a-zA-Z] [a-zA-Z0-9_\[\]]*
-  end
 
+  rule number
+    [1-9] [0-9]*
+  end
+ 
   # XXX: Ask the mailing list about this one. :-/
   rule string
     double_quoted_string / single_quoted_string
@@ -82,11 +44,7 @@ grammar Relevance
     '"' (!'"' . / '\"')* '"'
   end
 
-  rule number
-    [1-9] [0-9]*
-  end
-
-  rule whitespace
+  rule ws
     [\s]*
   end
 end

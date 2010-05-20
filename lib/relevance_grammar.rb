@@ -9,14 +9,7 @@ module Relevance
   end
 
   module Stmt0
-    def content
-      p text_value
-      elements.map {|e| e.content if e.respond_to? :content }
-    end
-  end
-
-  module Stmt1
-    def binary_operator
+    def operator
       elements[0]
     end
 
@@ -25,18 +18,11 @@ module Relevance
     end
   end
 
-  module Stmt2
+  module Stmt1
     def item
       elements[0]
     end
 
-  end
-
-  module Stmt3
-    def content
-      p text_value
-      elements.map {|e| e.content if e.respond_to? :content }
-    end
   end
 
   def _nt_stmt
@@ -50,59 +36,41 @@ module Relevance
       return cached
     end
 
-    i0 = index
+    i0, s0 = index, []
     r1 = _nt_item
-    r1.extend(Stmt0)
+    s0 << r1
     if r1
-      r0 = r1
-    else
-      i2, s2 = index, []
-      r3 = _nt_item
-      s2 << r3
-      if r3
-        s4, i4 = [], index
-        loop do
-          i5, s5 = index, []
-          r6 = _nt_binary_operator
-          s5 << r6
-          if r6
-            r7 = _nt_item
-            s5 << r7
-          end
-          if s5.last
-            r5 = instantiate_node(SyntaxNode,input, i5...index, s5)
-            r5.extend(Stmt1)
-          else
-            @index = i5
-            r5 = nil
-          end
-          if r5
-            s4 << r5
-          else
-            break
-          end
+      s2, i2 = [], index
+      loop do
+        i3, s3 = index, []
+        r4 = _nt_operator
+        s3 << r4
+        if r4
+          r5 = _nt_item
+          s3 << r5
         end
-        if s4.empty?
-          @index = i4
-          r4 = nil
+        if s3.last
+          r3 = instantiate_node(SyntaxNode,input, i3...index, s3)
+          r3.extend(Stmt0)
         else
-          r4 = instantiate_node(SyntaxNode,input, i4...index, s4)
+          @index = i3
+          r3 = nil
         end
-        s2 << r4
+        if r3
+          s2 << r3
+        else
+          break
+        end
       end
-      if s2.last
-        r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
-        r2.extend(Stmt2)
-      else
-        @index = i2
-        r2 = nil
-      end
-      if r2
-        r0 = r2
-      else
-        @index = i0
-        r0 = nil
-      end
+      r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
+      s0 << r2
+    end
+    if s0.last
+      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+      r0.extend(Stmt1)
+    else
+      @index = i0
+      r0 = nil
     end
 
     node_cache[:stmt][start_index] = r0
@@ -115,13 +83,6 @@ module Relevance
       elements[1]
     end
 
-  end
-
-  module StmtParens1
-    def content
-      p text_value
-      [:open_paren, elements[1].content, :close_paren]
-    end
   end
 
   def _nt_stmt_parens
@@ -161,7 +122,6 @@ module Relevance
     if s0.last
       r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
       r0.extend(StmtParens0)
-      r0.extend(StmtParens1)
     else
       @index = i0
       r0 = nil
@@ -172,8 +132,8 @@ module Relevance
     r0
   end
 
-  module BinaryOperator0
-    def whitespace1
+  module Operator0
+    def ws1
       elements[0]
     end
 
@@ -181,23 +141,15 @@ module Relevance
       elements[1]
     end
 
-    def whitespace2
+    def ws2
       elements[2]
     end
   end
 
-  module BinaryOperator1
-    def content
-      p text_value
-      p op
-      [op.text_value]
-    end
-  end
-
-  def _nt_binary_operator
+  def _nt_operator
     start_index = index
-    if node_cache[:binary_operator].has_key?(index)
-      cached = node_cache[:binary_operator][index]
+    if node_cache[:operator].has_key?(index)
+      cached = node_cache[:operator][index]
       if cached
         cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
@@ -206,26 +158,25 @@ module Relevance
     end
 
     i0, s0 = index, []
-    r1 = _nt_whitespace
+    r1 = _nt_ws
     s0 << r1
     if r1
       r2 = _nt_op
       s0 << r2
       if r2
-        r3 = _nt_whitespace
+        r3 = _nt_ws
         s0 << r3
       end
     end
     if s0.last
       r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-      r0.extend(BinaryOperator0)
-      r0.extend(BinaryOperator1)
+      r0.extend(Operator0)
     else
       @index = i0
       r0 = nil
     end
 
-    node_cache[:binary_operator][start_index] = r0
+    node_cache[:operator][start_index] = r0
 
     r0
   end
@@ -338,27 +289,6 @@ module Relevance
     r0
   end
 
-  module Item0
-		  def content
-    p text_value
-			  [text_value.to_sym]
-			end
-  end
-
-  module Item1
-    def content
-      p text_value
-      [text_value]
-    end
-  end
-
-  module Item2
-    def content
-      p text_value
-      [elements[1].content]
-    end
-  end
-
   def _nt_item
     start_index = index
     if node_cache[:item].has_key?(index)
@@ -372,17 +302,14 @@ module Relevance
 
     i0 = index
     r1 = _nt_identifier
-    r1.extend(Item0)
     if r1
       r0 = r1
     else
       r2 = _nt_constant
-      r2.extend(Item1)
       if r2
         r0 = r2
       else
         r3 = _nt_stmt_parens
-        r3.extend(Item2)
         if r3
           r0 = r3
         else
@@ -393,36 +320,6 @@ module Relevance
     end
 
     node_cache[:item][start_index] = r0
-
-    r0
-  end
-
-  def _nt_constant
-    start_index = index
-    if node_cache[:constant].has_key?(index)
-      cached = node_cache[:constant][index]
-      if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    i0 = index
-    r1 = _nt_number
-    if r1
-      r0 = r1
-    else
-      r2 = _nt_string
-      if r2
-        r0 = r2
-      else
-        @index = i0
-        r0 = nil
-      end
-    end
-
-    node_cache[:constant][start_index] = r0
 
     r0
   end
@@ -476,6 +373,89 @@ module Relevance
     end
 
     node_cache[:identifier][start_index] = r0
+
+    r0
+  end
+
+  def _nt_constant
+    start_index = index
+    if node_cache[:constant].has_key?(index)
+      cached = node_cache[:constant][index]
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
+      return cached
+    end
+
+    i0 = index
+    r1 = _nt_number
+    if r1
+      r0 = r1
+    else
+      r2 = _nt_string
+      if r2
+        r0 = r2
+      else
+        @index = i0
+        r0 = nil
+      end
+    end
+
+    node_cache[:constant][start_index] = r0
+
+    r0
+  end
+
+  module Number0
+  end
+
+  def _nt_number
+    start_index = index
+    if node_cache[:number].has_key?(index)
+      cached = node_cache[:number][index]
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
+      return cached
+    end
+
+    i0, s0 = index, []
+    if has_terminal?('\G[1-9]', true, index)
+      r1 = true
+      @index += 1
+    else
+      r1 = nil
+    end
+    s0 << r1
+    if r1
+      s2, i2 = [], index
+      loop do
+        if has_terminal?('\G[0-9]', true, index)
+          r3 = true
+          @index += 1
+        else
+          r3 = nil
+        end
+        if r3
+          s2 << r3
+        else
+          break
+        end
+      end
+      r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
+      s0 << r2
+    end
+    if s0.last
+      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
+      r0.extend(Number0)
+    else
+      @index = i0
+      r0 = nil
+    end
+
+    node_cache[:number][start_index] = r0
 
     r0
   end
@@ -716,63 +696,10 @@ module Relevance
     r0
   end
 
-  module Number0
-  end
-
-  def _nt_number
+  def _nt_ws
     start_index = index
-    if node_cache[:number].has_key?(index)
-      cached = node_cache[:number][index]
-      if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    i0, s0 = index, []
-    if has_terminal?('\G[1-9]', true, index)
-      r1 = true
-      @index += 1
-    else
-      r1 = nil
-    end
-    s0 << r1
-    if r1
-      s2, i2 = [], index
-      loop do
-        if has_terminal?('\G[0-9]', true, index)
-          r3 = true
-          @index += 1
-        else
-          r3 = nil
-        end
-        if r3
-          s2 << r3
-        else
-          break
-        end
-      end
-      r2 = instantiate_node(SyntaxNode,input, i2...index, s2)
-      s0 << r2
-    end
-    if s0.last
-      r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
-      r0.extend(Number0)
-    else
-      @index = i0
-      r0 = nil
-    end
-
-    node_cache[:number][start_index] = r0
-
-    r0
-  end
-
-  def _nt_whitespace
-    start_index = index
-    if node_cache[:whitespace].has_key?(index)
-      cached = node_cache[:whitespace][index]
+    if node_cache[:ws].has_key?(index)
+      cached = node_cache[:ws][index]
       if cached
         cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
         @index = cached.interval.end
@@ -796,7 +723,7 @@ module Relevance
     end
     r0 = instantiate_node(SyntaxNode,input, i0...index, s0)
 
-    node_cache[:whitespace][start_index] = r0
+    node_cache[:ws][start_index] = r0
 
     r0
   end

@@ -29,6 +29,9 @@ require 'rubygems'; require 'treetop'; require 'lib/relevance_grammar'
 # 
 #   
 input = <<-INPUT.split("\n")
+a
+1
+"yo"
 "a" == "b"
 a == b
 1 == 2
@@ -39,6 +42,7 @@ a == b
 a == ((1 == 2) && (2 || 3))
 a || b || c
 d && e || (f && g)
+==
 INPUT
 
 input.each do |s|
