@@ -11,12 +11,12 @@ grammar Relevance
     ws op ws
   end
 
-  rule op
-    '==' / '!=' / '>=' / '<=' / '>' / '<' / '&&' / '||'
-  end
-
   rule item
     identifier / constant / stmt_parens
+  end
+
+  rule op
+    '==' / '!=' / '>=' / '<=' / '>' / '<' / '&&' / '||'
   end
 
   rule identifier

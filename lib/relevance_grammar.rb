@@ -181,6 +181,41 @@ module Relevance
     r0
   end
 
+  def _nt_item
+    start_index = index
+    if node_cache[:item].has_key?(index)
+      cached = node_cache[:item][index]
+      if cached
+        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
+        @index = cached.interval.end
+      end
+      return cached
+    end
+
+    i0 = index
+    r1 = _nt_identifier
+    if r1
+      r0 = r1
+    else
+      r2 = _nt_constant
+      if r2
+        r0 = r2
+      else
+        r3 = _nt_stmt_parens
+        if r3
+          r0 = r3
+        else
+          @index = i0
+          r0 = nil
+        end
+      end
+    end
+
+    node_cache[:item][start_index] = r0
+
+    r0
+  end
+
   def _nt_op
     start_index = index
     if node_cache[:op].has_key?(index)
@@ -285,41 +320,6 @@ module Relevance
     end
 
     node_cache[:op][start_index] = r0
-
-    r0
-  end
-
-  def _nt_item
-    start_index = index
-    if node_cache[:item].has_key?(index)
-      cached = node_cache[:item][index]
-      if cached
-        cached = SyntaxNode.new(input, index...(index + 1)) if cached == true
-        @index = cached.interval.end
-      end
-      return cached
-    end
-
-    i0 = index
-    r1 = _nt_identifier
-    if r1
-      r0 = r1
-    else
-      r2 = _nt_constant
-      if r2
-        r0 = r2
-      else
-        r3 = _nt_stmt_parens
-        if r3
-          r0 = r3
-        else
-          @index = i0
-          r0 = nil
-        end
-      end
-    end
-
-    node_cache[:item][start_index] = r0
 
     r0
   end

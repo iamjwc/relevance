@@ -1,8 +1,5 @@
 require 'rubygems'; require 'treetop'; require 'lib/relevance_grammar'
 
-
-
-
 # def realeval(t)
 #   def neweval(t, accum)
 #     return if t.elements.nil?
@@ -42,7 +39,6 @@ a == b
 a == ((1 == 2) && (2 || 3))
 a || b || c
 d && e || (f && g)
-==
 INPUT
 
 input.each do |s|
