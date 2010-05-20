@@ -64,11 +64,13 @@ class Rel
         end
       else
         o = op_predicate(op)
+        # Pass in lambda's for each value to be lazy.
+        # This allows || to short circuit.
         rest.unshift o.call( lambda { e(a, env) }, lambda { e(b, env) })
       end
     end
 
-    e(@tree, env)
+    !![e(@tree, env)].flatten.first
   end
 end
 
