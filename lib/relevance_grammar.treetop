@@ -1,18 +1,48 @@
 grammar Relevance
   rule stmt
-    item (operator item)*
+    i:item op:operator s:stmt {
+      def tree
+        [i.tree, op.tree, s.tree]
+      end
+    }
+    / item {
+      def tree
+        #elements.select {|e| e.respond_to? :tree }.map {|e| e.tree }
+        text_value
+      end
+    }
   end
 
   rule stmt_parens
-    '(' stmt ')'
+    '(' ws stmt ws ')' {
+      def tree
+        [ elements[2].tree ]
+      end
+    }
   end
 
   rule operator
-    ws op ws
+    ws op:op ws {
+      def tree
+        op.text_value
+      end
+    }
   end
 
   rule item
-    identifier / constant / stmt_parens
+    identifier {
+      def tree
+        text_value.to_sym
+      end
+    }
+
+    / constant {
+      def tree
+        text_value
+      end
+    }
+
+    / stmt_parens
   end
 
   rule op

@@ -25,6 +25,7 @@ require 'rubygems'; require 'treetop'; require 'lib/relevance_grammar'
 # end
 # 
 #   
+
 input = <<-INPUT.split("\n")
 a
 1
@@ -39,8 +40,16 @@ a == b
 a == ((1 == 2) && (2 || 3))
 a || b || c
 d && e || (f && g)
+d &&    e || (   f && g   )
 INPUT
 
 input.each do |s|
-  p RelevanceParser.new.parse(s)
+  st = RelevanceParser.new.parse(s)
+  puts s
+  p st.tree if st.respond_to? :tree
+  puts
+end
+
+input.each do |s|
+  #p !!RelevanceParser.new.parse(s)
 end
