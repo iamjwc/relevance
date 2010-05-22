@@ -58,6 +58,7 @@ describe RelevanceInterpreter do
       RelevanceInterpreter.should be_lt("1",2)
       RelevanceInterpreter.should be_lt("1","2")
 
+      RelevanceInterpreter.should_not be_lt(1,1)
       RelevanceInterpreter.should_not be_lt(2,1)
       RelevanceInterpreter.should_not be_lt("2",1)
       RelevanceInterpreter.should_not be_lt(2,"1")
@@ -118,6 +119,7 @@ describe RelevanceInterpreter do
       RelevanceInterpreter.should be_gt(2  ,"1")
       RelevanceInterpreter.should be_gt("2","1")
 
+      RelevanceInterpreter.should_not be_gt(1  ,1  )
       RelevanceInterpreter.should_not be_gt(1  ,2  )
       RelevanceInterpreter.should_not be_gt(1  ,"2")
       RelevanceInterpreter.should_not be_gt("1",2  )
