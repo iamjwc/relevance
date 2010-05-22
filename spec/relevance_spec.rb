@@ -173,6 +173,34 @@ describe RelevanceInterpreter do
       RelevanceInterpreter.should_not be_gt("12:00"  ,"11:00am")
       RelevanceInterpreter.should_not be_gt("12:00am","11:00"  )
     end
+
+    it "should test less than or equal to on integers" do
+      RelevanceInterpreter.should be_lte(1,2)
+      RelevanceInterpreter.should be_lte(1,"2")
+      RelevanceInterpreter.should be_lte("1",2)
+      RelevanceInterpreter.should be_lte("1","2")
+
+      RelevanceInterpreter.should be_lte(1,1)
+
+      RelevanceInterpreter.should_not be_lte(2,1)
+      RelevanceInterpreter.should_not be_lte("2",1)
+      RelevanceInterpreter.should_not be_lte(2,"1")
+      RelevanceInterpreter.should_not be_lte("2","1")
+    end
+
+    it "should test greater than or equal to on integers" do
+      RelevanceInterpreter.should be_gte(2  ,1  )
+      RelevanceInterpreter.should be_gte("2",1  )
+      RelevanceInterpreter.should be_gte(2  ,"1")
+      RelevanceInterpreter.should be_gte("2","1")
+
+      RelevanceInterpreter.should be_gte(1  ,1  )
+
+      RelevanceInterpreter.should_not be_gte(1  ,2  )
+      RelevanceInterpreter.should_not be_gte(1  ,"2")
+      RelevanceInterpreter.should_not be_gte("1",2  )
+      RelevanceInterpreter.should_not be_gte("1","2")
+    end
   end
 # 
 #   describe "single statement" do

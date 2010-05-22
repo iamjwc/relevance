@@ -14,33 +14,38 @@ class RelevanceInterpreter
     end
 
     def lt?(a,b)
-      # Try If there is a slash, it must be a date
-      if a.to_s =~ /\//
-        return Date.parse(a) < Date.parse(b)
-      elsif a.to_s =~ /am|pm/i && b.to_s =~ /am|pm/i
-        self._time_to_i(a) < self._time_to_i(b)
-      elsif a.to_s =~ /:/ && b.to_s =~ /:/ && (a.to_s + b.to_s) !~ /am|pm/
-        self._time_to_i(a) < self._time_to_i(b)
-      else
-        return Integer(a) < Integer(b)
-      end
-    rescue
-      # Always return false if the inputs aren't
-      # integers
-      return false
+      self._ordered_inequality(a,b,:<)
     end
 
     def gt?(a,b)
+      self._ordered_inequality(a,b,:>)
+    end
+
+    def lte?(a,b)
+      self._ordered_inequality(a,b,:<=)
+    end
+
+    def gte?(a,b)
+      self._ordered_inequality(a,b,:>=)
+    end
+
+    def _ordered_inequality(a,b,op)
       # Try If there is a slash, it must be a date
       if a.to_s =~ /\//
-        return Date.parse(a) > Date.parse(b)
+        a = Date.parse(a)
+        b = Date.parse(b)
       elsif a.to_s =~ /am|pm/i && b.to_s =~ /am|pm/i
-        self._time_to_i(a) > self._time_to_i(b)
+        a = self._time_to_i(a)
+        b = self._time_to_i(b)
       elsif a.to_s =~ /:/ && b.to_s =~ /:/ && (a.to_s + b.to_s) !~ /am|pm/
-        self._time_to_i(a) > self._time_to_i(b)
+        a = self._time_to_i(a)
+        b = self._time_to_i(b)
       else
-        return Integer(a) > Integer(b)
+        a = Integer(a)
+        b = Integer(b)
       end
+
+      a.send(op, b)
     rescue
       # Always return false if the inputs aren't
       # integers
