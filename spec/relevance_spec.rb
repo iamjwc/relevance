@@ -111,66 +111,6 @@ describe RelevanceInterpreter do
       RelevanceInterpreter.should_not be_lt("11:00am","12:00")
       RelevanceInterpreter.should_not be_lt("11:00","12:00am")
     end
-
-    it "should test greater than on integers" do
-      RelevanceInterpreter.should be_gt(2  ,1  )
-      RelevanceInterpreter.should be_gt("2",1  )
-      RelevanceInterpreter.should be_gt(2  ,"1")
-      RelevanceInterpreter.should be_gt("2","1")
-
-      RelevanceInterpreter.should_not be_gt(1  ,2  )
-      RelevanceInterpreter.should_not be_gt(1  ,"2")
-      RelevanceInterpreter.should_not be_gt("1",2  )
-      RelevanceInterpreter.should_not be_gt("1","2")
-    end
-
-    it "should always return false for greater than on strings" do
-      RelevanceInterpreter.should_not be_gt("-1","b" )
-      RelevanceInterpreter.should_not be_gt("b" ,"-1")
-      RelevanceInterpreter.should_not be_gt("b" ,"1" )
-      RelevanceInterpreter.should_not be_gt("1" ,"b" )
-      RelevanceInterpreter.should_not be_gt("a" ,"b" )
-      RelevanceInterpreter.should_not be_gt("b" ,"a" )
-      RelevanceInterpreter.should_not be_gt("a" ,"a" )
-    end
-
-    it "should test greater than on dates" do
-      RelevanceInterpreter.should be_gt("02/20/2009","02/20/2008")
-      RelevanceInterpreter.should be_gt("02/20/2009","02/19/2009")
-
-      RelevanceInterpreter.should_not be_gt("02/20/2008","02/20/2009")
-    end
-
-    it "should test greater than on times" do
-      RelevanceInterpreter.should be_gt("11:00pm","10:30pm")
-      RelevanceInterpreter.should be_gt("1pm"    ,"10am"   )
-
-      RelevanceInterpreter.should_not be_gt("12:00am","10:00pm")
-    end
-
-    it "should test greater than on durations" do
-      RelevanceInterpreter.should be_gt("11:00","10:30")
-      RelevanceInterpreter.should be_gt("10"   ,"1"    )
-
-      RelevanceInterpreter.should_not be_gt("10:00","12:00")
-      RelevanceInterpreter.should_not be_gt("12:00","12:00")
-    end
-
-    it "should always return false for greater than between types" do
-      RelevanceInterpreter.should_not be_gt("a"         ,"02/20/2009")
-      RelevanceInterpreter.should_not be_gt("02/20/2008","a"         )
-      RelevanceInterpreter.should_not be_gt("02/20/2008","1"         )
-      RelevanceInterpreter.should_not be_gt("02/20/2008",1           )
-      RelevanceInterpreter.should_not be_gt("1"         ,"02/20/2009")
-      RelevanceInterpreter.should_not be_gt(1           ,"02/20/2009")
-      RelevanceInterpreter.should_not be_gt("12:00am"   ,"02/20/2009")
-      RelevanceInterpreter.should_not be_gt("02/20/2009","12:00am"   )
-      RelevanceInterpreter.should_not be_gt(1           ,"12:00am"   )
-
-      RelevanceInterpreter.should_not be_gt("12:00"  ,"12:00am")
-      RelevanceInterpreter.should_not be_gt("12:00"  ,"11:00am")
-      RelevanceInterpreter.should_not be_gt("12:00am","11:00"  )
-    end
   end
 # 
 #   describe "single statement" do
