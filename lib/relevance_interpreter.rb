@@ -1,6 +1,45 @@
 # XXX: It blows my mind knowing that this even works. This code is awful.
 # Could be rewritten to be much cleaner.
 class RelevanceInterpreter
+  class << self
+    def eq?(a,b)
+      a = [*a].map {|i| i.is_a?(Numeric) ? i.to_s : i }
+      b = [*b].map {|i| i.is_a?(Numeric) ? i.to_s : i }
+
+      a.inject(true) {|result, i| result && b.include?(i) }
+    end
+
+    def neq?(a,b)
+      !self.eq?(a,b)
+    end
+
+    def lt?(a,b)
+      # Try If there is a slash, it must be a date
+      if a.to_s =~ /\//
+        return Date.parse(a) < Date.parse(b)
+      elsif a.to_s =~ /am|pm/i && b.to_s =~ /am|pm/i
+        self._time_to_i(a) < self._time_to_i(b)
+      elsif a.to_s =~ /:/ && b.to_s =~ /:/ && (a.to_s + b.to_s) !~ /am|pm/
+        self._time_to_i(a) < self._time_to_i(b)
+      else
+        return Integer(a) < Integer(b)
+      end
+    rescue
+      # Always return false if the inputs aren't
+      # integers
+      return false
+    end
+
+    def _time_to_i(t)
+      pm = t =~ /pm/
+
+      t = t.split(":")
+      t[0] = t[0].to_i + (pm ? 12 : 0)
+      t[1] = t[1].to_i
+      t = t[0] * 100 + t[1]
+    end
+  end
+
   def initialize(source)
     @tree = RelevanceParser.new.parse(source).tree
   end
@@ -19,7 +58,6 @@ class RelevanceInterpreter
   end
 
   def relevant?(env)
-    p @tree
     !![evaluate(@tree, env)].flatten.first
   end
 
