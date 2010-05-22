@@ -420,7 +420,7 @@ module Relevance
 
   module Constant1
     def tree
-      text_value
+      text_value[1...-1]
     end
   end
 
