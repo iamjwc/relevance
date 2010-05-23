@@ -207,6 +207,12 @@ describe RelevanceInterpreter do
     end
   end
 
+  describe "empty string" do
+    it "should always be relevant" do
+      RelevanceInterpreter.new("").should be_relevant({})
+    end
+  end
+
   describe "single statement" do
     before(:each) do
       @r = RelevanceInterpreter.new "field1 == 'field1Value'"

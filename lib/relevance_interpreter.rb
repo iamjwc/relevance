@@ -61,7 +61,11 @@ class RelevanceInterpreter
   end
 
   def initialize(source)
-    @tree = RelevanceParser.new.parse(source).tree
+    if !source.blank?
+      @tree = RelevanceParser.new.parse(source).tree
+    else
+      @tree = true
+    end
   end
 
   def op_predicate(op)
