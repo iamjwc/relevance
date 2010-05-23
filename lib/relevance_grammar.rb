@@ -169,7 +169,7 @@ module Relevance
 
   module Operator1
     def tree
-      op.text_value
+      op.text_value.to_sym
     end
   end
 

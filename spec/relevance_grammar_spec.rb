@@ -43,6 +43,6 @@ eval"hi" && "you"
     @parser.parse('1').tree.should == 1
     @parser.parse('"a"').tree.should == 'a'
     @parser.parse('a').tree.should == :a
-    @parser.parse("blah == 1").tree.should == [:blah, '==', 1]
+    @parser.parse("blah == 1").tree.should == [:blah, :==, 1]
   end
 end

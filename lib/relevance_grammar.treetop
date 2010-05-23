@@ -1,3 +1,5 @@
+# XXX: Update to only support "fieldName op value"
+
 grammar Relevance
   rule stmt
     i:item op:operator s:stmt {
@@ -19,7 +21,7 @@ grammar Relevance
   rule operator
     ws op:op ws {
       def tree
-        op.text_value
+        op.text_value.to_sym
       end
     }
   end

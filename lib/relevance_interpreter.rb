@@ -1,12 +1,10 @@
-# XXX: It blows my mind knowing that this even works. This code is awful.
-# Could be rewritten to be much cleaner.
 class RelevanceInterpreter
   class << self
     def eq?(a,b)
       a = [*a].map {|i| i.is_a?(Numeric) ? i.to_s : i }
       b = [*b].map {|i| i.is_a?(Numeric) ? i.to_s : i }
 
-      a.inject(true) {|result, i| result && b.include?(i) }
+      b.inject(true) {|result, i| result && a.include?(i) }
     end
 
     def neq?(a,b)
@@ -68,14 +66,14 @@ class RelevanceInterpreter
 
   def op_predicate(op)
     case op
-      when '==' then lambda {|a,b| a.call() == b.call()}
-      when '!=' then lambda {|a,b| a.call() != b.call()}
-      when '>=' then lambda {|a,b| a.call() >= b.call()}
-      when '<=' then lambda {|a,b| a.call() <= b.call()}
-      when '>'  then lambda {|a,b| a.call() >  b.call()}
-      when '<'  then lambda {|a,b| a.call() <  b.call()}
-      when '&&' then lambda {|a,b| a.call() && b.call()}
-      when '||' then lambda {|a,b| a.call() || b.call()}
+      when :'==' then lambda {|a,b| self.class.eq?  a.call(), b.call() }
+      when :'!=' then lambda {|a,b| self.class.neq? a.call(), b.call() }
+      when :'>=' then lambda {|a,b| self.class.gte? a.call(), b.call() }
+      when :'<=' then lambda {|a,b| self.class.lte? a.call(), b.call() }
+      when :'>'  then lambda {|a,b| self.class.gt?  a.call(), b.call() }
+      when :'<'  then lambda {|a,b| self.class.lt?  a.call(), b.call() }
+      when :'&&' then lambda {|a,b| a.call() && b.call() }
+      when :'||' then lambda {|a,b| a.call() || b.call() }
     end
   end
 
@@ -88,23 +86,20 @@ class RelevanceInterpreter
   def evaluate(tree, env)
     a,op,b,*rest = tree
 
-    if op.nil?
+    if op.is_a? Symbol
+      o = op_predicate(op)
+      # Pass in lambda's for each value to be lazy.
+      # This allows || to short circuit.
+      rest.unshift o.call( lambda { evaluate(a, env) }, lambda { evaluate(b, env) })
+    else
       # Only one item in the stack.
-      if a.is_a? Array
-        # 'a' is an expression
-        evaluate(a, env)
-      elsif a.is_a? Symbol
+      if a.is_a? Symbol
         # 'a' is a variable name
         env[a]
       else
         # 'a' is a value
         a
       end
-    else
-      o = op_predicate(op)
-      # Pass in lambda's for each value to be lazy.
-      # This allows || to short circuit.
-      rest.unshift o.call( lambda { evaluate(a, env) }, lambda { evaluate(b, env) })
     end
   end
 end
