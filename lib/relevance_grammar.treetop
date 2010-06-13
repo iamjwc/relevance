@@ -2,9 +2,18 @@
 
 grammar Relevance
   rule stmt
-    i:item op:operator s:stmt {
+    i:comparison_statment op:combination_operator s:stmt {
       def tree
         [i.tree, op.tree, s.tree]
+      end
+    }
+    / comparison_statment
+  end
+
+  rule comparison_statment
+    i:item op:comparison_operator i2:item {
+      def tree
+        [i.tree, op.tree, i2.tree]
       end
     }
     / item
@@ -14,14 +23,6 @@ grammar Relevance
     '(' ws s:stmt ws ')' {
       def tree
         s.tree
-      end
-    }
-  end
-
-  rule operator
-    ws op:op ws {
-      def tree
-        op.text_value.to_sym
       end
     }
   end
@@ -38,8 +39,28 @@ grammar Relevance
     / stmt_parens
   end
 
-  rule op
-    '==' / '!=' / '>=' / '<=' / '>' / '<' / '&&' / '||'
+  rule comparison_operator
+    ws op:comparison_op ws {
+      def tree
+        op.text_value.to_sym
+      end
+    }
+  end
+
+  rule combination_operator
+    ws op:combination_op ws {
+      def tree
+        op.text_value.to_sym
+      end
+    }
+  end
+
+  rule comparison_op
+    '==' / '!=' / '>=' / '<=' / '>' / '<'
+  end
+
+  rule combination_op
+    '&&' / '||'
   end
 
   rule identifier
