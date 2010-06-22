@@ -346,4 +346,11 @@ describe RelevanceInterpreter do
       @gte.should be_relevant(:a => "90", :b => "1")
     end
   end
+
+  it "should work with empty strings" do
+    ri = RelevanceInterpreter.new("a == ''")
+    ri.should be_relevant(:a => "")
+    ri.should be_relevant(:a => nil)
+    ri.should_not be_relevant(:a => "hey")
+  end
 end

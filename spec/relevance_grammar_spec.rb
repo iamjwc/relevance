@@ -46,6 +46,10 @@ eval"hi" && "you"
     @parser.parse("blah == 1").tree.should == [:blah, :==, 1]
   end
 
+  it "should be able to parse an empty string" do
+    @parser.parse('a == ""').tree.should == [:a, :==, ""]
+  end
+
   it "should be able to parse complex statements" do
     @parser.parse("a == 1").tree.should == [:a, :==, 1]
     @parser.parse("a == 1 && b == 2").tree.should == [[:a, :==, 1], :"&&", [:b, :==, 2]]

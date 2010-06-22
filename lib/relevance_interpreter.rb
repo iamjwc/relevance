@@ -1,6 +1,15 @@
 class RelevanceInterpreter
   class << self
     def eq?(a,b)
+      # Give a and b default values.
+      a = "" if a.nil?
+      b = "" if b.nil?
+
+      # Hack because [*""] # => [], which causes eq? to
+      # always return true.
+      a = [a] if a == ""
+      b = [b] if b == ""
+
       a = [*a].map {|i| i.is_a?(Numeric) ? i.to_s : i }
       b = [*b].map {|i| i.is_a?(Numeric) ? i.to_s : i }
 
