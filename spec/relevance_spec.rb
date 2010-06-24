@@ -347,10 +347,17 @@ describe RelevanceInterpreter do
     end
   end
 
-  it "should work with empty strings" do
+  it "equal should work with empty strings" do
     ri = RelevanceInterpreter.new("a == ''")
     ri.should be_relevant(:a => "")
     ri.should be_relevant(:a => nil)
     ri.should_not be_relevant(:a => "hey")
+  end
+
+  it "not equal should work with empty strings" do
+    ri = RelevanceInterpreter.new("a != ''")
+    ri.should_not be_relevant(:a => "")
+    ri.should_not be_relevant(:a => nil)
+    ri.should be_relevant(:a => "hey")
   end
 end
