@@ -85,8 +85,8 @@ class RelevanceInterpreter
       when :'<=' then lambda {|a,b| self.class.lte? a.call(), b.call() }
       when :'>'  then lambda {|a,b| self.class.gt?  a.call(), b.call() }
       when :'<'  then lambda {|a,b| self.class.lt?  a.call(), b.call() }
-      when :'&&' then lambda {|a,b| a.call() && b.call() }
-      when :'||' then lambda {|a,b| a.call() || b.call() }
+      when :'&&' then lambda {|a,b| !![a.call()].flatten.first && !![b.call()].flatten.first }
+      when :'||' then lambda {|a,b| !![a.call()].flatten.first || !![b.call()].flatten.first }
     end
   end
 

@@ -352,6 +352,11 @@ describe RelevanceInterpreter do
     ri.should be_relevant(:a => "")
     ri.should be_relevant(:a => nil)
     ri.should_not be_relevant(:a => "hey")
+
+    ri = RelevanceInterpreter.new("a == 'hey'")
+    ri.should be_relevant(:a => "hey")
+    ri.should_not be_relevant(:a => "")
+    ri.should_not be_relevant(:a => nil)
   end
 
   it "not equal should work with empty strings" do
@@ -359,5 +364,33 @@ describe RelevanceInterpreter do
     ri.should_not be_relevant(:a => "")
     ri.should_not be_relevant(:a => nil)
     ri.should be_relevant(:a => "hey")
+
+    ri = RelevanceInterpreter.new("a != 'hey'")
+    ri.should_not be_relevant(:a => "hey")
+    ri.should be_relevant(:a => "")
+    ri.should be_relevant(:a => nil)
+  end
+
+  it "should work with &&" do
+    ri = RelevanceInterpreter.new("'' == 'something' && 'a' == 'a'")
+    ri.should_not be_relevant({})
+
+    ri = RelevanceInterpreter.new("'a' == 'a' && '' == 'something'")
+    ri.should_not be_relevant({})
+  end
+
+  it "should allow this field to not be relevant" do
+    fields = {"enrollment_type"=>"Freshman", "currently_enrolled"=>""}
+    ri = RelevanceInterpreter.new("currently_enrolled == 'Yes'")
+    ri.should_not be_relevant(fields)
+
+    ri = RelevanceInterpreter.new("currently_enrolled == 'Yes' && enrollment_type != 'Freshman' && (enrollment_type != 'Unclassified' && enrollment_type != '')")
+    ri.should_not be_relevant(fields)
+    
+    ri = RelevanceInterpreter.new("(enrollment_type != 'Freshman' && enrollment_type != '')")
+    ri.should_not be_relevant(fields)
+    
+    ri = RelevanceInterpreter.new("enrollment_type != 'Freshman' && (enrollment_type != 'Unclassified' && enrollment_type != '')")
+    ri.should_not be_relevant(fields)
   end
 end
